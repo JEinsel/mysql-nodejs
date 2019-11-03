@@ -23,16 +23,13 @@ connection.connect(function (err) {
 
 var quantity = 0;
 var price = 0;
+var salesPrice = 0
 
 function listItems() {
     connection.query(`SELECT * FROM products`, function (error, results) {
         if (error) throw err;
-        console.log(`View our catalog!`);
-
-        for (let i = 0; i < results.length; i++) {
-            const element = results[i];
-            console.log(`ID: ${element.item_id} - Item Name:${element.name} - ${element.department} - $${element.price} -quantity:${element.quantity}`)
-        }
+        console.table(results)
+        console.log("Please use #item_id to select an item!")
         inquirer.prompt([
             {
                 name: "id",
@@ -52,6 +49,7 @@ function listItems() {
                 }
                 quantity = results[0].quantity;
                 price = results[0].price;
+                salesPrice = results[0].product_sales
             })
             inquirer.prompt([
                 {
@@ -62,6 +60,7 @@ function listItems() {
             ]).then((answers) => {
                 var sum = quantity - answers.choice;
                 var total = price * answers.choice;
+                var newSales = salesPrice + total;
                 if (sum <= 0) {
                     console.log(`There is not enough quantity`)
                 } else {
@@ -71,6 +70,13 @@ function listItems() {
                         }
                         console.log(results)
                         console.log(`Your price is $${total} dollars`)
+                        connection.query(`UPDATE products SET product_sales = ${newSales} WHERE item_id ="${userChoice}"`, function (error, results) {
+                            if (error) {
+                                throw error;
+                            }
+                            console.log(results)
+                            console.log(`Your price is $${total} dollars`)
+                        })
                     })
                 }
             })
