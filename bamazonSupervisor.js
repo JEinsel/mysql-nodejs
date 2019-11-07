@@ -40,7 +40,7 @@ function listItems() {
             }
         ]).then((answers) => {
             if (answers.id === "View Product Sales by Department") {
-                console.log("Line 39 " + answers)
+                // console.log("Line 39 " + answers)
 
                 connection.query(`SELECT * FROM departments`, function (error, results) {
                     if (error) throw err;
